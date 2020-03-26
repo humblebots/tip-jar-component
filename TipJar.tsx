@@ -130,7 +130,7 @@ const TipJar: NavigationStackScreenComponent<
 
 			<View style={styles.contentContainer}>
 				<LottieView
-					source={require('../../assets/lottie/2837-trophy-animation.json')}
+					source={require('./2837-trophy-animation.json')}
 					autoSize={true}
 					resizeMode={'contain'}
 					loop={true}
