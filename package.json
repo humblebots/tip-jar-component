@@ -1,6 +1,7 @@
 {
 	"name": "@humblebots/tip-jar-component",
 	"version": "1.0.0",
+	"private": false,
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -26,6 +27,7 @@
 		"react-native": "^0.61.5",
 		"react-native-gesture-handler": "^1.6.1",
 		"react-native-iap": "^4.4.0",
+		"react-native-paper": "3.6.0",
 		"react-native-safe-area-context": "^0.7.3",
 		"react-native-safe-area-view": "^1.0.0",
 		"react-navigation": "^4.3.3",

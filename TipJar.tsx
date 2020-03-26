@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
-import { kHorizontalMargin } from './MainScreen';
 import { SafeAreaView } from 'react-navigation';
 import {
 	Text,
@@ -19,21 +18,20 @@ import {
 
 import RNIap, { Product } from 'react-native-iap';
 
-export interface ITipJarScreenParams {
+export const kHorizontalMargin = 16;
+
+export interface ITipJarParams {
 	productIds: string[];
 }
 
-export interface ITipJarScreenScreenProps {}
-export interface ITipJarScreenProps
-	extends NavigationStackScreenProps<
-		ITipJarScreenParams,
-		ITipJarScreenScreenProps
-	> {}
+export interface ITipJarScreenProps {}
+export interface ITipJarProps
+	extends NavigationStackScreenProps<ITipJarParams, ITipJarScreenProps> {}
 
-const TipJarScreen: NavigationStackScreenComponent<
-	ITipJarScreenParams,
-	ITipJarScreenScreenProps
-> = (props: ITipJarScreenProps) => {
+const TipJar: NavigationStackScreenComponent<
+	ITipJarParams,
+	ITipJarScreenProps
+> = (props: ITipJarProps) => {
 	const [getProducts, setProducts] = useState<Product[]>([]);
 
 	const { navigation } = props;
@@ -199,4 +197,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default TipJarScreen;
+export default TipJar;
