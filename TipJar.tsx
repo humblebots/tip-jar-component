@@ -1,44 +1,43 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-
-import { SafeAreaView } from 'react-navigation';
+import React, { useEffect, useState } from 'react';
 import {
-	Text,
-	IconButton,
+	View,
+	StyleSheet,
+	TouchableOpacity,
+	Alert,
+	SafeAreaView,
+	ViewProps,
+	Platform,
+} from 'react-native';
+
+import {
 	Headline,
 	Button,
 	Caption,
 	ActivityIndicator,
+	Subheading,
 } from 'react-native-paper';
 import LottieView from 'lottie-react-native';
-import {
-	NavigationStackScreenProps,
-	NavigationStackScreenComponent,
-} from 'react-navigation-stack';
 
 import RNIap, { Product } from 'react-native-iap';
 
 export const kHorizontalMargin = 16;
 
-export interface ITipJarParams {
+export interface ITipJarProps extends ViewProps {
+	description?: string;
 	productIds: string[];
 }
 
-export interface ITipJarScreenProps {}
-export interface ITipJarProps
-	extends NavigationStackScreenProps<ITipJarParams, ITipJarScreenProps> {}
-
-const TipJar: NavigationStackScreenComponent<
-	ITipJarParams,
-	ITipJarScreenProps
-> = (props: ITipJarProps) => {
+const TipJar = (props: ITipJarProps) => {
+	const { description, productIds } = props;
 	const [getProducts, setProducts] = useState<Product[]>([]);
 
-	const { navigation } = props;
+	const descriptionText =
+		description !== undefined && description.length !== 0
+			? description
+			: `This app will always be free without ads, but if you'd like to make a donation to help fund our continued work and server bills, it is immensely appreciated!`;
 
 	const loadProducts = async () => {
 		try {
-			const productIds = navigation.getParam('productIds');
 			await RNIap.initConnection();
 
 			const products = await RNIap.getProducts(productIds);
@@ -96,8 +95,16 @@ const TipJar: NavigationStackScreenComponent<
 						onProductSelected(product.productId);
 					}}
 					style={styles.tipRow}>
-					<View style={{ flex: 1, marginRight: kHorizontalMargin }}>
-						<Headline>{title}</Headline>
+					<View
+						style={{
+							flex: 1,
+							marginRight: kHorizontalMargin,
+						}}>
+						{Platform.OS === 'ios' ? (
+							<Headline>{title}</Headline>
+						) : (
+							<Subheading>{title}</Subheading>
+						)}
 
 						<Caption style={{ marginLeft: 2 }}>
 							{product.description}
@@ -111,37 +118,19 @@ const TipJar: NavigationStackScreenComponent<
 	};
 
 	return (
-		<View style={styles.container}>
-			<SafeAreaView>
-				<View style={styles.titleContainer}>
-					<View style={styles.titleButtonContainer}>
-						<IconButton
-							icon='arrow-left'
-							size={30}
-							onPress={() => {
-								navigation.goBack(null);
-							}}
-						/>
-					</View>
-
-					<Text style={styles.titleLabel}>{'Tip Jar'}</Text>
-				</View>
-			</SafeAreaView>
-
+		<View {...props} style={[styles.container, props.style]}>
 			<View style={styles.contentContainer}>
 				<LottieView
 					source={require('./2837-trophy-animation.json')}
 					autoSize={true}
+					autoPlay={true}
 					resizeMode={'contain'}
 					loop={true}
 					style={styles.animation}
 				/>
 			</View>
 
-			<Caption
-				style={
-					styles.descriptionText
-				}>{`Shortlist will always be free, but if you'd like to make a donation to help fund our continued work on Shortlist it is immensely appreciated!`}</Caption>
+			<Caption style={styles.descriptionText}>{descriptionText}</Caption>
 
 			<View style={styles.productContainer}>{renderProducts()}</View>
 			<SafeAreaView />
@@ -165,35 +154,19 @@ const styles = StyleSheet.create({
 	},
 	descriptionText: {
 		marginHorizontal: kHorizontalMargin * 2,
-		marginBottom: kHorizontalMargin,
+		marginBottom:
+			Platform.OS === 'ios' ? kHorizontalMargin : kHorizontalMargin / 2,
 	},
 	productContainer: {
 		flex: -1,
-		paddingBottom: 32,
+		paddingBottom: Platform.OS === 'ios' ? 32 : 8,
 	},
 	tipRow: {
 		alignItems: 'center',
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		paddingVertical: 8,
+		paddingVertical: Platform.OS === 'ios' ? 8 : 4,
 		paddingHorizontal: kHorizontalMargin,
-	},
-	titleButtonContainer: {
-		flexDirection: 'row',
-	},
-	titleContainer: {
-		alignItems: 'center',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		marginTop: 44,
-		marginBottom: 4,
-		marginHorizontal: kHorizontalMargin,
-	},
-	titleLabel: {
-		color: '#2E2E2E',
-		fontSize: 36,
-		fontWeight: '700',
-		paddingRight: kHorizontalMargin,
 	},
 });
 
