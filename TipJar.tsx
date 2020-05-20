@@ -101,12 +101,16 @@ const TipJar = (props: ITipJarProps) => {
 							marginRight: kHorizontalMargin,
 						}}>
 						{Platform.OS === 'ios' ? (
-							<Headline>{title}</Headline>
+							<Headline style={{ color: '#202020' }}>
+								{title}
+							</Headline>
 						) : (
-							<Subheading>{title}</Subheading>
+							<Subheading style={{ color: '#202020' }}>
+								{title}
+							</Subheading>
 						)}
 
-						<Caption style={{ marginLeft: 2 }}>
+						<Caption style={{ marginLeft: 2, color: '#787878' }}>
 							{product.description}
 						</Caption>
 					</View>
