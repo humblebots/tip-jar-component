@@ -7,6 +7,7 @@ import {
 	SafeAreaView,
 	ViewProps,
 	Platform,
+	ViewStyle,
 } from 'react-native';
 
 import {
@@ -25,6 +26,7 @@ export const kHorizontalMargin = 16;
 export interface ITipJarProps extends ViewProps {
 	description?: string;
 	productIds: string[];
+	style: ViewStyle;
 }
 
 const TipJar = (props: ITipJarProps) => {
