@@ -18,7 +18,9 @@
 	},
 	"homepage": "https://github.com/humblebots/tip-jar-component#readme",
 	"peerDependencies": {},
-	"dependencies": {},
+	"dependencies": {
+		"@types/node": "^14.0.5"
+	},
 	"devDependencies": {
 		"@babel/core": "^7.8.3",
 		"@babel/runtime": "^7.8.3",
