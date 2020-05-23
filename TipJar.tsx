@@ -59,9 +59,11 @@ const TipJar = (props: ITipJarProps) => {
 				'Thank you so much for your donation!',
 			);
 		} catch (error) {
+			console.error(error);
+
 			Alert.alert(
 				'Error',
-				`Failed to purchase product. Please try again.: ${error}`,
+				'Failed to purchase product. Please try again.',
 			);
 		}
 	};
