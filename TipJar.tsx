@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
 	View,
 	StyleSheet,
@@ -8,6 +8,7 @@ import {
 	ViewProps,
 	Platform,
 	ViewStyle,
+	EmitterSubscription,
 } from 'react-native';
 
 import {
@@ -19,7 +20,12 @@ import {
 } from 'react-native-paper';
 import LottieView from 'lottie-react-native';
 
-import RNIap, { Product } from 'react-native-iap';
+import RNIap, {
+	Product,
+	purchaseUpdatedListener,
+	InAppPurchase,
+	Purchase,
+} from 'react-native-iap';
 
 export const kHorizontalMargin = 16;
 
@@ -33,10 +39,52 @@ const TipJar = (props: ITipJarProps) => {
 	const { description, productIds } = props;
 	const [getProducts, setProducts] = useState<Product[]>([]);
 
+	const purchaseListenerRef = useRef<EmitterSubscription>();
+
 	const descriptionText =
 		description !== undefined && description.length !== 0
 			? description
 			: `This app will always be free without ads, but if you'd like to make a donation to help fund our continued work and server bills, it is immensely appreciated!`;
+
+	const removePurchaseListener = () => {
+		if (purchaseListenerRef.current) {
+			purchaseListenerRef.current.remove();
+			purchaseListenerRef.current = undefined;
+		}
+	};
+
+	const setupPurchaseListener = () => {
+		purchaseListenerRef.current = purchaseUpdatedListener(
+			(purchase: InAppPurchase | Purchase) => {
+				console.log('purchaseUpdatedListener', purchase);
+				const receipt = purchase.transactionReceipt;
+
+				if (!receipt) {
+					return;
+				}
+
+				// Tell the store that you have delivered what has been paid for.
+				// Failure to do this will result in the purchase being refunded on Android and
+				// the purchase event will reappear on every relaunch of the app until you succeed
+				// in doing the below. It will also be impossible for the user to purchase consumables
+				// again untill you do this.
+				if (Platform.OS === 'ios') {
+					RNIap.finishTransactionIOS(purchase.transactionId);
+				} else if (Platform.OS === 'android') {
+					// If consumable (can be purchased again)
+					RNIap.consumePurchaseAndroid(purchase.purchaseToken);
+					// If not consumable
+					// RNIap.acknowledgePurchaseAndroid(purchase.purchaseToken);
+				}
+
+				// From react-native-iap@4.1.0 you can simplify above `method`. Try to wrap the statement with `try` and `catch` to also grab the `error` message.
+				// If consumable (can be purchased again)
+				RNIap.finishTransaction(purchase, true);
+				// If not consumable
+				// RNIap.finishTransaction(purchase, false);
+			},
+		);
+	};
 
 	const loadProducts = async () => {
 		try {
@@ -69,7 +117,12 @@ const TipJar = (props: ITipJarProps) => {
 	};
 
 	useEffect(() => {
+		setupPurchaseListener();
 		loadProducts();
+
+		return () => {
+			removePurchaseListener();
+		};
 	}, []);
 
 	const renderProducts = () => {
